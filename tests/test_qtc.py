@@ -20,3 +20,22 @@ def test_qtc_rejects_non_positive_intervals():
 
     with pytest.raises(ValueError, match="RR intervals"):
         qtc_fridericia([400.0], [-1.0])
+
+
+def test_qtc_rejects_nan_intervals():
+    with pytest.raises(ValueError, match="NaN"):
+        qtc_bazett([float("nan")], [1000.0])
+
+    with pytest.raises(ValueError, match="NaN"):
+        qtc_fridericia([400.0], [float("nan")])
+
+    with pytest.raises(ValueError, match="NaN"):
+        qtc_hodges([float("nan")], [60.0])
+
+    with pytest.raises(ValueError, match="NaN"):
+        qtc_hodges([400.0], [float("nan")])
+
+
+def test_qtc_rejects_non_numeric_input():
+    with pytest.raises(TypeError, match="Cannot convert"):
+        qtc_bazett(["abc"], [1000.0])

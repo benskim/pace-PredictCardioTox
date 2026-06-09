@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 from ecg_analytics.alerts import AlertRule, generate_qtc_alerts
 from ecg_analytics.baseline import baseline_summary
@@ -32,3 +33,9 @@ def test_baseline_summary_groups_measurements():
 
     assert summary.loc[summary["subject_id"] == "A", "count"].item() == 2
     assert summary.loc[summary["subject_id"] == "A", "mean"].item() == 410.0
+
+
+def test_baseline_summary_rejects_invalid_group_columns_type():
+    measurements = pd.DataFrame({"qtc_ms": [400.0]})
+    with pytest.raises(TypeError, match="group_columns must be a string or list"):
+        baseline_summary(measurements, group_columns=123)

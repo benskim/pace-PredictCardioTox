@@ -74,6 +74,11 @@ def test_discover_local_records_returns_empty_when_no_headers(tmp_path):
     assert discover_local_records(data_dir=tmp_path) == []
 
 
+def test_discover_local_records_raises_on_missing_directory(tmp_path):
+    with pytest.raises(FileNotFoundError, match="does not exist"):
+        discover_local_records(data_dir=tmp_path / "nonexistent")
+
+
 # ---------------------------------------------------------------------------
 # load_qt_record
 # ---------------------------------------------------------------------------
@@ -91,6 +96,7 @@ def test_load_qt_record_returns_dataframe_and_metadata(mock_rdrecord, tmp_path):
 
     db_dir = tmp_path / QT_DATABASE
     db_dir.mkdir(parents=True)
+    (db_dir / "sel100.hea").touch()
 
     signals, metadata = load_qt_record("sel100", data_dir=tmp_path)
 
@@ -108,6 +114,12 @@ def test_load_qt_record_returns_dataframe_and_metadata(mock_rdrecord, tmp_path):
     assert metadata["signal_names"] == ["MLII", "V5"]
     assert metadata["units"] == ["mV", "mV"]
     assert metadata["comments"] == ["test comment"]
+
+
+def test_load_qt_record_raises_on_missing_header(tmp_path):
+    (tmp_path / "qtdb").mkdir()
+    with pytest.raises(FileNotFoundError, match="Record header not found"):
+        load_qt_record("sel100", data_dir=tmp_path)
 
 
 # ---------------------------------------------------------------------------
@@ -128,6 +140,7 @@ def test_load_qt_annotations_returns_tidy_dataframe(mock_rdann, tmp_path):
 
     db_dir = tmp_path / QT_DATABASE
     db_dir.mkdir(parents=True)
+    (db_dir / "sel100.pu0").touch()
 
     df = load_qt_annotations("sel100", annotator="pu0", data_dir=tmp_path)
 
@@ -156,7 +169,14 @@ def test_load_qt_annotations_defaults_to_pu0(mock_rdann, tmp_path):
     )
     db_dir = tmp_path / QT_DATABASE
     db_dir.mkdir(parents=True)
+    (db_dir / "sel100.pu0").touch()
 
     load_qt_annotations("sel100", data_dir=tmp_path)
 
     mock_rdann.assert_called_once_with(str(db_dir / "sel100"), "pu0")
+
+
+def test_load_qt_annotations_raises_on_missing_annotation(tmp_path):
+    (tmp_path / "qtdb").mkdir()
+    with pytest.raises(FileNotFoundError, match="Annotation file not found"):
+        load_qt_annotations("sel100", annotator="pu0", data_dir=tmp_path)

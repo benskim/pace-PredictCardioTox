@@ -18,8 +18,14 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    signals, metadata = load_qt_record(args.record, args.data_dir)
-    annotations = load_qt_annotations(args.record, args.annotator, args.data_dir)
+    try:
+        signals, metadata = load_qt_record(args.record, args.data_dir)
+    except (FileNotFoundError, ValueError) as exc:
+        raise SystemExit(f"Error loading record: {exc}") from None
+    try:
+        annotations = load_qt_annotations(args.record, args.annotator, args.data_dir)
+    except FileNotFoundError as exc:
+        raise SystemExit(f"Error loading annotations: {exc}") from None
     print("Record metadata:")
     print(metadata)
     print("\nSignal preview:")

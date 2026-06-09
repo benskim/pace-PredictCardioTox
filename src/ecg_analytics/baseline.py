@@ -15,6 +15,10 @@ def baseline_summary(
         raise ValueError(f"Missing required QTc column: {qtc_column}")
     if isinstance(group_columns, str):
         group_columns = [group_columns]
+    elif not isinstance(group_columns, list):
+        raise TypeError(
+            f"group_columns must be a string or list of strings, got {type(group_columns).__name__}"
+        )
     missing = [column for column in group_columns if column not in measurements.columns]
     if missing:
         raise ValueError(f"Missing grouping columns: {missing}")

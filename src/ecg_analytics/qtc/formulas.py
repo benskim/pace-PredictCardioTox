@@ -14,16 +14,25 @@ import numpy as np
 import pandas as pd
 
 
-def _as_array(values: float | pd.Series | np.ndarray) -> np.ndarray:
-    return np.asarray(values, dtype=float)
+def _as_array(values: float | pd.Series | np.ndarray, name: str = "values") -> np.ndarray:
+    try:
+        return np.asarray(values, dtype=float)
+    except (TypeError, ValueError) as exc:
+        raise TypeError(
+            f"Cannot convert {name!r} to a numeric array: {exc}"
+        ) from exc
 
 
 def _validate(
     qt_ms: float | pd.Series | np.ndarray,
     rr_ms: float | pd.Series | np.ndarray,
 ) -> tuple[np.ndarray, np.ndarray]:
-    qt = _as_array(qt_ms)
-    rr = _as_array(rr_ms)
+    qt = _as_array(qt_ms, "qt_ms")
+    rr = _as_array(rr_ms, "rr_ms")
+    if np.any(np.isnan(qt)):
+        raise ValueError("QT intervals contain NaN values.")
+    if np.any(np.isnan(rr)):
+        raise ValueError("RR intervals contain NaN values.")
     if np.any(qt <= 0):
         raise ValueError("QT intervals must be positive milliseconds.")
     if np.any(rr <= 0):
@@ -63,8 +72,12 @@ def qtc_hodges(
     heart_rate_bpm: float | pd.Series | np.ndarray,
 ) -> np.ndarray:
     """Hodges correction: QT + 1.75 * (HR - 60)."""
-    qt = _as_array(qt_ms)
-    hr = _as_array(heart_rate_bpm)
+    qt = _as_array(qt_ms, "qt_ms")
+    hr = _as_array(heart_rate_bpm, "heart_rate_bpm")
+    if np.any(np.isnan(qt)):
+        raise ValueError("QT intervals contain NaN values.")
+    if np.any(np.isnan(hr)):
+        raise ValueError("Heart rates contain NaN values.")
     if np.any(qt <= 0):
         raise ValueError("QT intervals must be positive milliseconds.")
     if np.any(hr <= 0):

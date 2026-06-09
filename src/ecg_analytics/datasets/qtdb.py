@@ -50,14 +50,28 @@ class QTDBDataset:
         records: list[str] | None = None,
         annotators: list[str] | None = None,
     ) -> Path:
-        """Download the QT Database via WFDB."""
+        """Download the QT Database via WFDB.
+
+        Raises
+        ------
+        OSError
+            If the download fails due to network or filesystem issues.
+        """
         self.db_dir.mkdir(parents=True, exist_ok=True)
-        wfdb.dl_database(
-            DATABASE_NAME,
-            dl_dir=str(self.db_dir),
-            records=records or "all",
-            annotators=annotators or "all",
-        )
+        record_arg = records or "all"
+        annotator_arg = annotators or "all"
+        try:
+            wfdb.dl_database(
+                DATABASE_NAME,
+                dl_dir=str(self.db_dir),
+                records=record_arg,
+                annotators=annotator_arg,
+            )
+        except Exception as exc:
+            raise OSError(
+                f"Failed to download QT Database (records={record_arg!r}, "
+                f"annotators={annotator_arg!r}) into {self.db_dir}: {exc}"
+            ) from exc
         return self.db_dir
 
     # ------------------------------------------------------------------
@@ -65,7 +79,18 @@ class QTDBDataset:
     # ------------------------------------------------------------------
 
     def list_records(self) -> list[str]:
-        """Return sorted record IDs found locally."""
+        """Return sorted record IDs found locally.
+
+        Raises
+        ------
+        FileNotFoundError
+            If the database directory does not exist.
+        """
+        if not self.db_dir.is_dir():
+            raise FileNotFoundError(
+                f"QT Database directory does not exist: {self.db_dir}. "
+                f"Call download() first."
+            )
         return sorted(p.stem for p in self.db_dir.glob("*.hea"))
 
     # ------------------------------------------------------------------
@@ -85,7 +110,17 @@ class QTDBDataset:
             Annotation extension (``"pu0"`` or ``"pu1"``).
         """
         rec_path = str(self.db_dir / record_id)
+        header_file = self.db_dir / f"{record_id}.hea"
+        if not header_file.is_file():
+            raise FileNotFoundError(
+                f"Record header not found: {header_file}. "
+                f"Ensure record '{record_id}' has been downloaded."
+            )
         rec = wfdb.rdrecord(rec_path)
+        if rec.p_signal is None:
+            raise ValueError(
+                f"Record '{record_id}' contains no signal data (p_signal is None)."
+            )
 
         signal = np.asarray(rec.p_signal, dtype=np.float64)
 

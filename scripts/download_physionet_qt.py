@@ -18,7 +18,10 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    target = download_qt_database(args.data_dir, records=args.records, annotators=args.annotators)
+    try:
+        target = download_qt_database(args.data_dir, records=args.records, annotators=args.annotators)
+    except OSError as exc:
+        raise SystemExit(f"Error: {exc}") from None
     print(f"QT Database files are available in: {target}")
 
 
