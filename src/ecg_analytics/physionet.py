@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Iterable
 
@@ -9,6 +10,18 @@ import pandas as pd
 import wfdb
 
 QT_DATABASE = "qtdb"
+
+_SAFE_NAME_RE = re.compile(r"^[a-zA-Z0-9_-]+$")
+
+
+def _validate_name(value: str, label: str) -> str:
+    """Reject names that contain path separators or unsafe characters."""
+    if not value or not _SAFE_NAME_RE.match(value):
+        raise ValueError(
+            f"{label} must be non-empty and contain only "
+            f"alphanumeric characters, hyphens, or underscores; got {value!r}"
+        )
+    return value
 
 
 def download_qt_database(
@@ -28,6 +41,12 @@ def download_qt_database(
     annotators:
         Optional annotation extensions, for example `pu0` or `pu1`.
     """
+    if records:
+        for rec in records:
+            _validate_name(rec, "record name")
+    if annotators:
+        for ann in annotators:
+            _validate_name(ann, "annotator")
     target = Path(data_dir) / QT_DATABASE
     target.mkdir(parents=True, exist_ok=True)
     wfdb.dl_database(
@@ -47,6 +66,7 @@ def discover_local_records(data_dir: str | Path = "data/physionet") -> list[str]
 
 def load_qt_record(record_name: str, data_dir: str | Path = "data/physionet") -> tuple[pd.DataFrame, dict]:
     """Load a QT Database record as a signal DataFrame plus metadata."""
+    _validate_name(record_name, "record name")
     record_path = Path(data_dir) / QT_DATABASE / record_name
     record = wfdb.rdrecord(str(record_path))
     signals = pd.DataFrame(record.p_signal, columns=record.sig_name)
@@ -69,6 +89,8 @@ def load_qt_annotations(
     data_dir: str | Path = "data/physionet",
 ) -> pd.DataFrame:
     """Load QT Database annotations into a tidy DataFrame."""
+    _validate_name(record_name, "record name")
+    _validate_name(annotator, "annotator")
     record_path = Path(data_dir) / QT_DATABASE / record_name
     annotation = wfdb.rdann(str(record_path), annotator)
     return pd.DataFrame(
