@@ -8,19 +8,19 @@ from ecg_analytics.baseline import baseline_summary
 
 def test_baseline_summary_raises_on_missing_qtc_column():
     df = pd.DataFrame({"subject_id": ["A"], "value": [400.0]})
-    with pytest.raises(ValueError, match="Missing required QTc column"):
+    with pytest.raises(ValueError, match="Missing required column"):
         baseline_summary(df)
 
 
 def test_baseline_summary_raises_on_missing_group_columns():
     df = pd.DataFrame({"qtc_ms": [400.0]})
-    with pytest.raises(ValueError, match="Missing grouping columns"):
+    with pytest.raises(ValueError, match="Missing required column"):
         baseline_summary(df, group_columns="nonexistent_col")
 
 
 def test_baseline_summary_raises_on_multiple_missing_group_columns():
     df = pd.DataFrame({"qtc_ms": [400.0]})
-    with pytest.raises(ValueError, match="Missing grouping columns"):
+    with pytest.raises(ValueError, match="Missing required column"):
         baseline_summary(df, group_columns=["col_a", "col_b"])
 
 

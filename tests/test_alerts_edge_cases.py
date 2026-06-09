@@ -8,7 +8,7 @@ from ecg_analytics.alerts import AlertRule, generate_qtc_alerts
 
 def test_generate_qtc_alerts_raises_on_missing_qtc_column():
     df = pd.DataFrame({"subject_id": ["A"], "some_other": [400.0]})
-    with pytest.raises(ValueError, match="Missing required QTc column"):
+    with pytest.raises(ValueError, match="Missing required column"):
         generate_qtc_alerts(df)
 
 

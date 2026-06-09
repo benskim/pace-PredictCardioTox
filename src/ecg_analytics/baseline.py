@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import pandas as pd
 
+from ._helpers import require_columns
+
 
 def baseline_summary(
     measurements: pd.DataFrame,
@@ -11,13 +13,9 @@ def baseline_summary(
     qtc_column: str = "qtc_ms",
 ) -> pd.DataFrame:
     """Summarize baseline QTc measurements by subject or cohort grouping."""
-    if qtc_column not in measurements.columns:
-        raise ValueError(f"Missing required QTc column: {qtc_column}")
     if isinstance(group_columns, str):
         group_columns = [group_columns]
-    missing = [column for column in group_columns if column not in measurements.columns]
-    if missing:
-        raise ValueError(f"Missing grouping columns: {missing}")
+    require_columns(measurements, qtc_column, *group_columns)
 
     return (
         measurements.groupby(group_columns, dropna=False)[qtc_column]

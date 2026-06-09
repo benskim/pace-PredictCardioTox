@@ -6,6 +6,8 @@ from dataclasses import dataclass
 
 import pandas as pd
 
+from ._helpers import require_columns
+
 
 @dataclass(frozen=True)
 class AlertRule:
@@ -30,8 +32,7 @@ def generate_qtc_alerts(measurements: pd.DataFrame, rule: AlertRule | None = Non
         QTc >= 500 ms or QTc increase >= 60 ms from baseline.
     """
     rule = rule or AlertRule()
-    if rule.qtc_column not in measurements.columns:
-        raise ValueError(f"Missing required QTc column: {rule.qtc_column}")
+    require_columns(measurements, rule.qtc_column)
 
     alerts = measurements.copy()
     alerts["absolute_qtc_alert"] = alerts[rule.qtc_column] >= rule.absolute_qtc_ms

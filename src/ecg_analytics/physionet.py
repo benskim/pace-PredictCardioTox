@@ -24,6 +24,11 @@ def _validate_name(value: str, label: str) -> str:
     return value
 
 
+def _qt_db_path(data_dir: str | Path) -> Path:
+    """Return the local directory for the QT Database inside *data_dir*."""
+    return Path(data_dir) / QT_DATABASE
+
+
 def download_qt_database(
     data_dir: str | Path = "data/physionet",
     records: Iterable[str] | None = None,
@@ -47,7 +52,7 @@ def download_qt_database(
     if annotators:
         for ann in annotators:
             _validate_name(ann, "annotator")
-    target = Path(data_dir) / QT_DATABASE
+    target = _qt_db_path(data_dir)
     target.mkdir(parents=True, exist_ok=True)
     wfdb.dl_database(
         QT_DATABASE,
@@ -60,14 +65,13 @@ def download_qt_database(
 
 def discover_local_records(data_dir: str | Path = "data/physionet") -> list[str]:
     """Return record names discovered from local WFDB header files."""
-    database_dir = Path(data_dir) / QT_DATABASE
-    return sorted(path.stem for path in database_dir.glob("*.hea"))
+    return sorted(path.stem for path in _qt_db_path(data_dir).glob("*.hea"))
 
 
 def load_qt_record(record_name: str, data_dir: str | Path = "data/physionet") -> tuple[pd.DataFrame, dict]:
     """Load a QT Database record as a signal DataFrame plus metadata."""
     _validate_name(record_name, "record name")
-    record_path = Path(data_dir) / QT_DATABASE / record_name
+    record_path = _qt_db_path(data_dir) / record_name
     record = wfdb.rdrecord(str(record_path))
     signals = pd.DataFrame(record.p_signal, columns=record.sig_name)
     signals.insert(0, "sample", signals.index.astype(int))
@@ -91,7 +95,7 @@ def load_qt_annotations(
     """Load QT Database annotations into a tidy DataFrame."""
     _validate_name(record_name, "record name")
     _validate_name(annotator, "annotator")
-    record_path = Path(data_dir) / QT_DATABASE / record_name
+    record_path = _qt_db_path(data_dir) / record_name
     annotation = wfdb.rdann(str(record_path), annotator)
     return pd.DataFrame(
         {
