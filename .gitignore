@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ECG analytics workspace data artifacts
+/data/*
+!/data/.gitkeep
