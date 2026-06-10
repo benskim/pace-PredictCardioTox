@@ -4,8 +4,11 @@ A **Codespaces-ready**, notebook-driven research environment for evaluating the
 scientific reliability of QT interval measurement and QTc analytics in clinical
 trial safety studies.
 
-> **Primary question:** How reliably can QTc be measured across datasets, noise
-> conditions, and patient populations?
+> **Primary question:** *Can this QT/QTc measurement be trusted?*
+>
+> The workspace answers this by evaluating measurement reliability across datasets,
+> noise conditions, and patient populations — and producing an explainable
+> **Measurement Confidence Score** for every QTc result.
 
 ---
 
@@ -19,10 +22,32 @@ ECG → preprocessing → wave delineation (1-D U-Net)
     → T-end determination → QT measurement
     → QTc calculation (Fridericia / Bazett / Framingham / Hodges)
     → longitudinal shift analytics
+    → measurement confidence scoring
 ```
 
 The final T-end decision is always **explainable** — the tangent method provides
 a geometric rationale rather than a black-box prediction.
+
+### QTc Confidence Engine
+
+Every measurement is accompanied by a **Measurement Confidence Score** (0–100)
+aggregated from five explainable sub-scores:
+
+| Sub-score | Weight | What it measures |
+|-----------|--------|------------------|
+| Signal Quality | 20 % | SNR, flatline, drift, kurtosis |
+| T-End Stability | 25 % | Agreement across 4 T-end methods (tangent, threshold, derivative, wavelet) |
+| Morphology Risk | 15 % | T-wave shape difficulty (normal → merged T-U) |
+| Formula Agreement | 15 % | QTc spread across Fridericia / Bazett / Framingham / Hodges |
+| Beat Stability | 25 % | Beat-to-beat QT coefficient of variation |
+
+**Interpretation tiers:**
+
+| Score | Tier | Action |
+|-------|------|--------|
+| 90–100 | High Confidence | Accept measurement |
+| 70–89 | Review Recommended | Flag for secondary review |
+| < 70 | Manual Review Required | Do not use without expert validation |
 
 ## Research Priorities
 
@@ -79,7 +104,10 @@ predictcardiotox-qtc-research/
 │   ├── delineation/        # 1-D U-Net segmentation model
 │   ├── qt/                 # Tangent method, T-end, QT measurement
 │   ├── qtc/                # QTc formulas + longitudinal shift tracking
-│   ├── validation/         # Metrics, pipeline, report generation
+│   ├── tend/               # T-end multi-method agreement (tangent, threshold, derivative, wavelet)
+│   ├── morphology/         # T-wave morphology classification and risk scoring
+│   ├── confidence/         # Measurement Confidence Engine (composite 0–100 score)
+│   ├── validation/         # Metrics, pipeline, clinical validation, expert variability
 │   └── visualization/      # Publication-quality plots
 ├── tests/                  # Unit tests
 ├── scripts/                # Helper scripts
@@ -166,6 +194,10 @@ Controlled experiments with four noise types at five SNR levels:
 | 10 | Cross-Dataset Validation | Generalizability across databases |
 | 11 | Noise Robustness | Degradation under controlled noise |
 | 12 | Error Analysis | Bland-Altman, distributions, outliers |
+| 13 | Measurement Confidence | Confidence Engine demo with sub-score breakdown |
+| 14 | Expert Variability | Inter-observer agreement metrics |
+| 15 | Beat Variability | Beat-to-beat QT stability analysis |
+| 16 | Clinical Validation | Bland-Altman, coverage at ±5/10/20 ms |
 
 ---
 

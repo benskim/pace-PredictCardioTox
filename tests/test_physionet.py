@@ -1,12 +1,10 @@
 """Unit tests for ecg_analytics.physionet — the least covered module (37%)."""
 
-from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
-import pytest
 
 from ecg_analytics.physionet import (
     QT_DATABASE,

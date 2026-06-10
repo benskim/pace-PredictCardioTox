@@ -10,7 +10,7 @@ from ..datasets.base import ECGRecord
 from ..preprocessing.noise import NOISE_FUNCTIONS, STANDARD_SNR_LEVELS
 from ..qt.measurement import measure_qt_intervals
 from ..qtc.formulas import compute_all_qtc
-from .metrics import delineation_metrics, qt_metrics, qtc_metrics
+from .metrics import qt_metrics, qtc_metrics
 
 
 @dataclass

@@ -8,7 +8,7 @@ from ecg_analytics.validation.metrics import (
     qt_metrics,
     qtc_metrics,
 )
-from ecg_analytics.validation.pipeline import ValidationPipeline, ValidationResult
+from ecg_analytics.validation.pipeline import ValidationResult
 from ecg_analytics.validation.reports import results_to_markdown
 
 
