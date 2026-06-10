@@ -1,53 +1,69 @@
-# QTc Measurement Validation Engine
+# Cardiac Safety Reliability Platform
 
-> **We do not only calculate QTc. We quantify whether a QTc result should be trusted.**
+> **Not only measuring QTc. Determining whether QTc results can be trusted.**
 
-A **measurement reliability platform** that produces an explainable, auditable
-confidence score for every QTc measurement — enabling pharmaceutical sponsors,
-CROs, and ECG core labs to distinguish trusted measurements from those requiring
-manual review.
+A **reliability operations platform** for cardiac safety assessment — helping
+sponsors answer: "Which ECG evidence can be trusted? What requires review? Why?
+What is the impact on study-level cardiac safety conclusions?"
 
 ---
 
 ## Product Vision
 
-| Competitors show | This product shows |
-|------------------|-------------------|
+| Competitors show | This platform shows |
+|------------------|---------------------|
 | QTc Value | QTc **Reliability** |
 | "What is the QTc?" | "Can this QTc be **trusted**?" |
 
-**Confidence is the hero metric, not QTc.**
+**Reliability is the product. Confidence is evidence. QTc is only the measurement.**
 
 ---
 
 ## Demo Application
 
-The interactive demo is a Streamlit application with three views:
+The interactive demo is a Streamlit application with five views:
 
-### 1. Measurement Validation (Primary Screen)
+### 1. Reliability Overview (Landing Page)
 
+Executive-level reliability monitoring:
+- **KPI cards** — Mean Confidence, Trusted ECG Rate, Review Rate, Unreliable Rate
+- **Reliability Health Summary** — plain-language study quality assessment
+- **Top Reliability Risks** — auto-detected issues driving confidence reduction
+- **Study Reliability Status** — Green / Yellow / Red with explanation
+
+### 2. Review Queue
+
+The most operationally valuable screen:
+- **Priority queue** — sorted by lowest confidence first
+- **Filters** — Subject, Decision, Primary Driver, Confidence Range
+- **Review Workload Summary** — quantified review burden
+
+### 3. Measurement Validation
+
+Detailed investigation screen:
 - **Confidence Score** — dominant visual element (0–100%)
-- **Decision** — Auto Accept / Manual Review Recommended / Measurement Unreliable
-- **QTcF** — secondary, small
-- **Confidence Drivers** — Signal Quality, Beat Consistency, T-End Confidence, Noise Impact, QT Stability
+- **Decision** — Auto Accept / Manual Review / Measurement Unreliable
+- **Confidence Drivers** — Signal Quality, Beat Consistency, T-End Confidence, QT Stability, Noise Impact
 - **Score Decomposition** — transparent penalty breakdown
-- **Explanation** — plain-language reasons in clinician-friendly language
+- **Explanation** — plain-language reasons
+- **Reliability Context** — this ECG vs. study average and percentile
 
-### 2. Side-by-Side Reliability Comparison
+### 4. ECG Comparison
 
-The "aha" moment: two ECGs with **nearly identical QTc values** but **completely
-different reliability scores**. Demonstrates why measurement confidence matters
-more than the measurement itself.
+The "aha" moment:
+- Two ECGs with **nearly identical QTc** but **completely different reliability**
+- **Reliability Drivers Comparison** — grouped bar chart
+- **Operational Impact** — consequences for review workflow
 
-### 3. Research Analytics
+### 5. Reliability Analytics
 
-Study-level reliability metrics:
-- Confidence distribution
-- Review required rate
-- Signal quality distribution
-- Confidence vs QTcF scatter
-- Confidence trend over time
-- Study-level reliability summary table
+Study-level reliability intelligence:
+- **Auto-generated insights** — top drivers, threshold violations, trends
+- **Reliability Driver Ranking** — contributors to confidence reduction
+- **Distribution charts** — confidence, signal quality, T-end confidence
+- **Confidence Trend Over Time** — with threshold lines
+- **Study Impact Assessment** — operational consequences
+- **Study-Level Reliability Metrics** — 9-row summary table
 
 ### Run the Demo
 
@@ -73,16 +89,6 @@ Confidence = Base Score (100)
            − T-End Ambiguity Penalty
            − Formula Disagreement Penalty
 ```
-
-### Sub-Scores (0–100 each)
-
-| Sub-score | Weight | What it measures |
-|-----------|--------|------------------|
-| Signal Quality | 20% | SNR, flatline fraction, drift, kurtosis |
-| T-End Stability | 25% | Agreement across 4 T-end methods (tangent, threshold, derivative, wavelet) |
-| Morphology Risk | 15% | T-wave shape difficulty (normal → merged T-U) |
-| Formula Agreement | 15% | QTc spread across Fridericia / Bazett / Framingham / Hodges |
-| Beat Stability | 25% | Beat-to-beat QT coefficient of variation |
 
 ### Interpretation Tiers
 
@@ -113,7 +119,7 @@ predictcardiotox-qtc-research/
 │   ├── validation/            # Clinical validation, expert variability
 │   └── visualization/         # Publication-quality plots
 ├── notebooks/                 # Research notebooks (01–16)
-├── tests/                     # Unit tests (162 tests)
+├── tests/                     # Unit tests (162+)
 ├── scripts/                   # Helper scripts
 └── pyproject.toml
 ```
@@ -126,33 +132,12 @@ predictcardiotox-qtc-research/
 # Install
 pip install -e ".[dev]"
 
-# Run validation engine demo
+# Run reliability platform demo
 streamlit run app/validation_engine.py
 
 # Run tests
 pytest --cov=ecg_analytics --cov-report=term-missing tests/
 ```
-
----
-
-## Supported QTc Formulas
-
-| Formula | Equation | Notes |
-|---------|----------|-------|
-| **Fridericia** | QT / RR^(1/3) | **Default reporting formula** |
-| Bazett | QT / √RR | Most widely used historically |
-| Framingham | QT + 154·(1 − RR) | Linear correction |
-| Hodges | QT + 1.75·(HR − 60) | Heart-rate based |
-
----
-
-## Target Datasets
-
-| Dataset | Records | Annotations | Source |
-|---------|---------|-------------|--------|
-| PhysioNet QT Database | ~100 | Expert QT fiducials | PhysioNet |
-| LUDB | 200 | Detailed P/QRS/T boundaries (12-lead) | PhysioNet |
-| CSE Multilead | Variable | Reference measurements | User-provided WFDB |
 
 ---
 
