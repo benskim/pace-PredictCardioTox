@@ -1,12 +1,40 @@
-# Cardiac Safety Reliability Platform
+# QTc Confidence Engine
 
 > **Not only measuring QTc. Determining whether QTc results can be trusted.**
 
-A **reliability operations platform** for cardiac safety assessment — helping
-sponsors answer: "Which ECG evidence can be trusted? What requires review? Why?
-What is the impact on study-level cardiac safety conclusions?"
+Reliable QT/QTc Measurement for Cardiac Safety Assessment.
+ 
+Designed to identify which ECG measurements can be trusted,
+which require expert review, and why.
+
+## Why This Exists
+Most cardiac toxicity AI systems attempt to predict toxicity from molecular structures before clinical trials. This project addresses a different problem. Once a drug enters clinical development, regulatory decisions depend on ECG evidence collected from real human subjects. The critical question becomes:
+
+Can the ECG evidence itself be trusted?
+
+The QTc Confidence Engine quantifies measurement reliability and identifies ECGs requiring expert review.
+
+## Current Scope:
+Current development focuses on a research-grade QTc Confidence Engine.
+
+In Scope:
+- Signal quality assessment
+- T-end confidence
+- Reliability scoring
+- Explainability
+- Review prioritization
+
+Out of Scope:
+- Molecular toxicity prediction
+- TdP prediction
+- Clinical trial outcome prediction
+- FDA approval prediction
 
 ---
+## Clinical Context
+
+In clinical cardiac safety studies, regulatory decisions may depend on QTc changes of only a few milliseconds. Measurement uncertainty can directly affect the interpretation of cardiac safety signals in clinical studies. Noise contamination, T-wave morphology changes, delineation ambiguity, and measurement variability can introduce uncertainty large enough to affect cardiac safety conclusions.
+The objective of the QTc Confidence Engine is to quantify that uncertainty rather than hide it.
 
 ## Product Vision
 
