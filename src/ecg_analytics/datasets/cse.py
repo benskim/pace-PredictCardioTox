@@ -35,11 +35,13 @@ class CSEDataset:
 
     def list_records(self) -> list[str]:
         """Return sorted record IDs found locally."""
-        return sorted(p.stem for p in self.db_dir.glob("*.hea"))
+        records = [
+            p.with_suffix("").relative_to(self.db_dir).as_posix()
+            for p in self.db_dir.glob("**/*.hea")
+        ]
+        return sorted(records)
 
-    def load_record(
-        self, record_id: str, annotator: str | None = None
-    ) -> ECGRecord:
+    def load_record(self, record_id: str, annotator: str | None = None) -> ECGRecord:
         """Load a single CSE record.
 
         Parameters
@@ -59,9 +61,7 @@ class CSEDataset:
             if ann_file.exists():
                 ann = wfdb.rdann(rec_path, annotator)
                 for samp, sym in zip(ann.sample, ann.symbol):
-                    annotations.append(
-                        Annotation(sample=int(samp), symbol=sym, label=sym)
-                    )
+                    annotations.append(Annotation(sample=int(samp), symbol=sym, label=sym))
 
         return ECGRecord(
             record_id=record_id,

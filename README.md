@@ -142,10 +142,14 @@ fs = record.fs
 ```
 
 | Dataset | Records | Annotations | Source |
-|---------|---------|-------------|--------|
-| PhysioNet QT Database | ~100 | Expert QT fiducials | PhysioNet |
-| LUDB | 200 | Detailed P/QRS/T boundaries (12-lead) | PhysioNet |
-| CSE Multilead | Variable | Reference measurements | User-provided WFDB |
+|----------|----------|----------|----------|
+| PhysioNet QT Database (QTDB) | ~100 | Expert QT fiducials and T-end annotations | PhysioNet |
+| LUDB | 200 | Detailed P/QRS/T wave boundaries (12-lead) | PhysioNet |
+| MIT-BIH Noise Stress Test Database (NSTDB) | Multiple | Controlled noise recordings | PhysioNet |
+| INCART Database | 75 | Arrhythmia annotations (12-lead ECG) | PhysioNet |
+| PTB-XL | 21,000+ | Diagnostic labels and clinical metadata | PhysioNet |
+
+** more details : data/target_datasets.md
 
 ---
 

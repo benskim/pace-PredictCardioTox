@@ -66,15 +66,17 @@ class QTDBDataset:
 
     def list_records(self) -> list[str]:
         """Return sorted record IDs found locally."""
-        return sorted(p.stem for p in self.db_dir.glob("*.hea"))
+        records = [
+            p.with_suffix("").relative_to(self.db_dir).as_posix()
+            for p in self.db_dir.glob("**/*.hea")
+        ]
+        return sorted(records)
 
     # ------------------------------------------------------------------
     # Loading
     # ------------------------------------------------------------------
 
-    def load_record(
-        self, record_id: str, annotator: str = "pu0"
-    ) -> ECGRecord:
+    def load_record(self, record_id: str, annotator: str = "pu0") -> ECGRecord:
         """Load a single QT Database record.
 
         Parameters

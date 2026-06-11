@@ -70,3 +70,4 @@ class ECGRecord:
         if self.signal.ndim == 1:
             return self.signal
         return self.signal[:, idx]
+

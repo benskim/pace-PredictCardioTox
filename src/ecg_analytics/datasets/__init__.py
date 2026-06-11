@@ -9,14 +9,18 @@ Every adapter exposes the same API::
 """
 
 from .base import Annotation, ECGRecord
-from .cse import CSEDataset
+from .incart import INCARTDataset
 from .ludb import LUDBDataset
+from .nstdb import NSTDBDataset
+from .ptbxl import PTBXLDataset
 from .qtdb import QTDBDataset
 
 __all__ = [
     "Annotation",
-    "CSEDataset",
     "ECGRecord",
+    "INCARTDataset",
     "LUDBDataset",
+    "NSTDBDataset",
+    "PTBXLDataset",
     "QTDBDataset",
 ]
