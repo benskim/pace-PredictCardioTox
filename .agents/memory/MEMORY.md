@@ -1,0 +1,2 @@
+- [QTc Notebook Architecture](qtc-notebook-arch.md) — 11-notebook pipeline replacing original 16; strict evidence independence rules; outputs/ dir holds all parquet artifacts.
+- [QTc API Quirks](qtc-api-quirks.md) — key library API field names and common mistakes to avoid.
